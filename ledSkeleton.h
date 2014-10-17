@@ -11,38 +11,49 @@ class ledSkeleton {
   
     ledSkeleton(void);
     
-	void setLedInstance( OctoWS2811* leds, int ledsPerStrip, int maxLightness );
+	void setLedInstance( OctoWS2811* leds, int ledsPerStrip );
 	
-	void setLEDColor(int color);
+	void initLEDs();
+	
+	void setLEDColor(unsigned int h, unsigned int s, unsigned int l);
 	
 	void clearLEDColor();
 	
 	void setLEDPartColor(int color, int channel, int ledsToChange);
 	
-	void pulse();
+	void pulseLEDs();
 	
-	void startPulse();
-	void stopPulse();
+	void pulseStart();
+	void pulseStop();
 	
-	void initLeftArm(int channel);
-	void initRightArm(int channel);
+	void initLeftArm(unsigned int channel);
+	void initRightArm(unsigned int channel);
 	
-	void initLeftLeg(int channel);
-	void initRightLeg(int channel);
+	void initLeftLeg(unsigned int channel);
+	void initRightLeg(unsigned int channel);
 	
-	void initBody(int channel);
+	void initBody(unsigned int channel);
 	
 	void setPulsing(boolean p);
-	
-	void setCurrentLightness(int l);
 	void setPulsingDirection(boolean p);
 	
-	int returnCurrentLightness();
+	void setLightness(unsigned int l);
 	
-	int returnLeftLegChannel();
+	int getHue();
+	int getSaturation();
+	int getLightness();
 	
-	boolean returnPulsing();
-	boolean returnPulsingDirection();
+	void setMaxLightness(unsigned int ml);
+	int getMaxLightness();
+	
+	//int returnLeftLegChannel();
+	
+	boolean getPulsing();
+	boolean getPulsingDirection();
+	
+	// color functions
+	int makeColor(unsigned int hue, unsigned int saturation, unsigned int lightness);
+	unsigned int h2rgb(unsigned int v1, unsigned int v2, unsigned int hue);
     
   private:
     
@@ -50,8 +61,13 @@ class ledSkeleton {
     
     int _ledsPerStrip;
     int _currentColor;
-    int _pulseStep;
-    int _currentLightness;
+    
+    int _h;
+    int _s;
+    int _l;
+    
+    int _pulseSpeed;
+    
     int _maxLightness;
     int _lightnessStep;
     
