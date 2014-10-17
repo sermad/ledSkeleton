@@ -19,7 +19,7 @@ class ledSkeleton {
 	
 	void clearLEDColor();
 	
-	void setLEDPartColor(int color, int channel, int ledsToChange);
+	void setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange);
 	
 	void pulseLEDs();
 	
@@ -34,6 +34,14 @@ class ledSkeleton {
 	
 	void initBody(unsigned int channel);
 	
+	int getLeftArmChannel();
+	int getRightArmChannel();
+	
+	int getLeftLegChannel();
+	int getRightLegChannel();
+	
+	int getBodyChannel();
+	
 	void setPulsing(boolean p);
 	void setPulsingDirection(boolean p);
 	
@@ -45,8 +53,6 @@ class ledSkeleton {
 	
 	void setMaxLightness(unsigned int ml);
 	int getMaxLightness();
-	
-	//int returnLeftLegChannel();
 	
 	boolean getPulsing();
 	boolean getPulsingDirection();

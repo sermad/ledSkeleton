@@ -46,8 +46,6 @@ void ledSkeleton::setLEDColor(unsigned int h, unsigned int s, unsigned int l) {
 
 void ledSkeleton::clearLEDColor() {
 
-	//_currentColor = 0x000000;
-
 	// iterate over ALL of the pixels and set them to one color
   	for (int i=0; i < ledInstance->numPixels(); i++) {
     	ledInstance->setPixel(i, 0x000000);
@@ -57,9 +55,9 @@ void ledSkeleton::clearLEDColor() {
 
 }
 
-void ledSkeleton::setLEDPartColor(int color, int channel, int ledsToChange) {
+void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange) {
 
-	//_currentColor = color;
+	int color = makeColor(h, s, l);
 
 	// iterate over just the pixels for that body part and set them to one color
 	int pos = _ledsPerStrip * (channel-1);
@@ -95,9 +93,25 @@ void ledSkeleton::initBody(unsigned int channel) {
 	_bodyChannel = channel;
 }
 
-//int ledSkeleton::returnLeftLegChannel() {
-//	return _leftLegChannel;
-//}
+int ledSkeleton::getLeftLegChannel() {
+	return _leftLegChannel;
+}
+
+int ledSkeleton::getRightLegChannel() {
+	return _rightLegChannel;
+}
+
+int ledSkeleton::getLeftArmChannel() {
+	return _leftArmChannel;
+}
+
+int ledSkeleton::getRightArmChannel() {
+	return _rightArmChannel;
+}
+
+int ledSkeleton::getBodyChannel() {
+	return _bodyChannel;
+}
 
 int ledSkeleton::getHue() {
 	return _h;
