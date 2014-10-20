@@ -32,6 +32,10 @@ void ledSkeleton::initLEDs() {
 
 void ledSkeleton::setLEDColor(unsigned int h, unsigned int s, unsigned int l) {
 
+	setHue(h);
+	setSaturation(s);
+	setLightness(l);
+
 	//_currentColor = color;
 	int color = makeColor(h, s, l);
 
@@ -58,40 +62,102 @@ void ledSkeleton::clearLEDColor() {
 void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange) {
 
 	int color = makeColor(h, s, l);
+	
+	if(channel == getRightLegChannel() ) {
+	
+		// Check if right leg and reverse the way we light the LEDs
 
-	// iterate over just the pixels for that body part and set them to one color
-	int pos = _ledsPerStrip * (channel-1);
-	int end = pos + ledsToChange;
+		// Iterate over just the pixels for that body part and set them to one color
+		int pos = _ledsPerStrip * (channel-1) + getRightLegSize();
+		int end = pos - ledsToChange;
 	
-	//Serial.println(end);
+		for (pos; pos >= end; pos--) {
+			ledInstance->setPixel(pos, color);
+		}
+  	
+  	} else if(channel == getBodyChannel() ) {
+  	
+		// iterate over just the pixels for that body part and set them to one color
+		int startpos = _ledsPerStrip * (channel-1);
+		int end = startpos + ledsToChange;
 	
-  	for (pos; pos < end; pos++) {
-    	ledInstance->setPixel(pos, color);
+		for (int pos = startpos; pos < end; pos++) {
+		
+			if(pos < startpos + 15) {
+				ledInstance->setPixel(pos, color);
+			} else {
+				ledInstance->setPixel(pos, color);
+				ledInstance->setPixel(pos + 4, color);
+				ledInstance->setPixel(pos + (4*2), color);
+				ledInstance->setPixel(pos + (4*3), color);
+				ledInstance->setPixel(pos + (4*4), color);
+				ledInstance->setPixel(pos + (4*5), color);
+			}
+		}
+  	
+  	} else {
+  	
+		// iterate over just the pixels for that body part and set them to one color
+		int pos = _ledsPerStrip * (channel-1);
+		int end = pos + ledsToChange;
+	
+		for (pos; pos < end; pos++) {
+				ledInstance->setPixel(pos, color);
+		}
+  	
   	}
   	
   	ledInstance->show();
 
 }
 
-void ledSkeleton::initLeftArm(unsigned int channel) {
+void ledSkeleton::setLEDEq(unsigned int h, unsigned int s, unsigned int l, unsigned int eqSize) {
+
+	int totalSize = getLeftLegSize() + getRightLegSize() + getBackSize() + getLeftArmSize() + getRightArmSize();
+
+	if(eqSize > totalSize) {
+		eqSize = totalSize;
+	}
+
+	setLEDPartColor(h, s, l, getLeftLegChannel(), eqSize);
+
+	setLEDPartColor(h, s, l, getRightLegChannel(), eqSize);
+	
+	setLEDPartColor(h, s, l, getBodyChannel(), eqSize - getLeftLegSize() );
+	
+	setLEDPartColor(h, s, l, getLeftArmChannel(), eqSize - getLeftLegSize() - getBackSize() - getRibSize() );
+
+	setLEDPartColor(h, s, l, getRightArmChannel(), eqSize - getRightLegSize() - getBackSize() - getRibSize() );
+
+}
+
+void ledSkeleton::initLeftArm(unsigned int channel, unsigned int size) {
 	_leftArmChannel = channel;
+	_leftArmSize = size;
 }
 
-void ledSkeleton::initRightArm(unsigned int channel) {
+void ledSkeleton::initRightArm(unsigned int channel, unsigned int size) {
 	_rightArmChannel = channel;
+	_rightArmSize = size;
 }
 
-void ledSkeleton::initLeftLeg(unsigned int channel) {
+void ledSkeleton::initLeftLeg(unsigned int channel, unsigned int size) {
 	_leftLegChannel = channel;
+	_leftLegSize = size;
 }
 
-void ledSkeleton::initRightLeg(unsigned int channel) {
+void ledSkeleton::initRightLeg(unsigned int channel, unsigned int size) {
 	_rightLegChannel = channel;
+	_rightLegSize = size;
 }
 
-void ledSkeleton::initBody(unsigned int channel) {
+void ledSkeleton::initBody(unsigned int channel, unsigned int backsize, unsigned int ribsize) {
 	_bodyChannel = channel;
+	_backSize = backsize;
+	_ribSize = ribsize;
 }
+
+//
 
 int ledSkeleton::getLeftLegChannel() {
 	return _leftLegChannel;
@@ -113,6 +179,34 @@ int ledSkeleton::getBodyChannel() {
 	return _bodyChannel;
 }
 
+//
+
+int ledSkeleton::getLeftLegSize() {
+	return _leftLegSize;
+}
+
+int ledSkeleton::getRightLegSize() {
+	return _rightLegSize;
+}
+
+int ledSkeleton::getLeftArmSize() {
+	return _leftArmSize;
+}
+
+int ledSkeleton::getRightArmSize() {
+	return _rightArmSize;
+}
+
+int ledSkeleton::getBackSize() {
+	return _backSize;
+}
+
+int ledSkeleton::getRibSize() {
+	return _ribSize;
+}
+
+//
+
 int ledSkeleton::getHue() {
 	return _h;
 }
@@ -121,12 +215,20 @@ int ledSkeleton::getSaturation() {
 	return _s;
 }
 
-void ledSkeleton::setLightness(unsigned int l) {
-	_l = l;
-}
-
 int ledSkeleton::getLightness() {
 	return _l;
+}
+
+void ledSkeleton::setHue(unsigned int h) {
+	_h = h;
+}
+
+void ledSkeleton::setSaturation(unsigned int s) {
+	_s = s;
+}
+
+void ledSkeleton::setLightness(unsigned int l) {
+	_l = l;
 }
 
 void ledSkeleton::setMaxLightness(unsigned int ml) {
@@ -166,9 +268,9 @@ void ledSkeleton::pulseStop() {
 void ledSkeleton::pulseLEDs() {
 
 	// check if we are pulsing
-    if(getPulsing() ) {
+    if( getPulsing() ) {
 
-		//delay(20);
+		
       
 		// rising pulse
 		if(getPulsingDirection() ) {
@@ -178,7 +280,7 @@ void ledSkeleton::pulseLEDs() {
         	if(getLightness() < getMaxLightness() ) {
           
     			// increment lightness
-    			int l2 = _l;
+    			int l2 = getLightness();
     			l2++;
     			setLightness(l2);
 

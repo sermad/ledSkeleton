@@ -26,13 +26,13 @@ class ledSkeleton {
 	void pulseStart();
 	void pulseStop();
 	
-	void initLeftArm(unsigned int channel);
-	void initRightArm(unsigned int channel);
+	void initLeftArm(unsigned int channel, unsigned int size);
+	void initRightArm(unsigned int channel, unsigned int size);
 	
-	void initLeftLeg(unsigned int channel);
-	void initRightLeg(unsigned int channel);
+	void initLeftLeg(unsigned int channel, unsigned int size);
+	void initRightLeg(unsigned int channel, unsigned int size);
 	
-	void initBody(unsigned int channel);
+	void initBody(unsigned int channel, unsigned int backsize, unsigned int ribsize);
 	
 	int getLeftArmChannel();
 	int getRightArmChannel();
@@ -42,9 +42,22 @@ class ledSkeleton {
 	
 	int getBodyChannel();
 	
+	int getLeftArmSize();
+	int getRightArmSize();
+	
+	int getLeftLegSize();
+	int getRightLegSize();
+	
+	int getBackSize();
+	int getRibSize();
+	
 	void setPulsing(boolean p);
 	void setPulsingDirection(boolean p);
 	
+	void setLEDEq(unsigned int h, unsigned int s, unsigned int l, unsigned int eqSize);
+	
+	void setHue(unsigned int h);
+	void setSaturation(unsigned int s);
 	void setLightness(unsigned int l);
 	
 	int getHue();
@@ -84,6 +97,16 @@ class ledSkeleton {
 	int _rightLegChannel;
 	
 	int _bodyChannel;
+	
+	int _leftArmSize;
+	int _rightArmSize;
+	
+	int _leftLegSize;
+	int _rightLegSize;
+	
+	int _backSize;
+	int _ribSize;
+    
     
     boolean _pulsing;
     boolean _pulsingDirection;
