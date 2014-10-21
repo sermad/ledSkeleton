@@ -9,6 +9,28 @@ class ledSkeleton {
 
   public:
   
+  	typedef struct {
+ 		String name;
+ 		unsigned int channel;
+ 		unsigned int size;
+ 		unsigned int h;
+ 		unsigned int s;
+ 		unsigned int l;
+ 		unsigned int pulsingSpeed = 1;
+ 		unsigned int maxLightness = 10;
+ 		boolean pulsing = false;
+ 		boolean pulsingDirection = true;
+ 	} _bodypart;
+ 	
+ 	_bodypart leftLeg;
+ 	_bodypart rightLeg;
+ 	
+ 	_bodypart leftArm;
+ 	_bodypart rightArm;
+ 	
+ 	_bodypart spine;
+ 	//_bodypart rib;
+  
     ledSkeleton(void);
     
 	void setLedInstance( OctoWS2811* leds, int ledsPerStrip );
@@ -21,7 +43,9 @@ class ledSkeleton {
 	
 	void setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange);
 	
-	void pulseLEDs();
+	void pulseLEDCostume(unsigned int d);
+	
+	void pulsePart(_bodypart* p, unsigned int d);
 	
 	void pulseStart();
 	void pulseStop();
@@ -32,7 +56,8 @@ class ledSkeleton {
 	void initLeftLeg(unsigned int channel, unsigned int size);
 	void initRightLeg(unsigned int channel, unsigned int size);
 	
-	void initBody(unsigned int channel, unsigned int backsize, unsigned int ribsize);
+	void initSpine(unsigned int channel, unsigned int spineSize);
+	void initRib(unsigned int channel, unsigned int ribSize);
 	
 	int getLeftArmChannel();
 	int getRightArmChannel();
@@ -40,7 +65,8 @@ class ledSkeleton {
 	int getLeftLegChannel();
 	int getRightLegChannel();
 	
-	int getBodyChannel();
+	int getSpineChannel();
+	int getRibChannel();
 	
 	int getLeftArmSize();
 	int getRightArmSize();
@@ -48,7 +74,7 @@ class ledSkeleton {
 	int getLeftLegSize();
 	int getRightLegSize();
 	
-	int getBackSize();
+	int getSpineSize();
 	int getRibSize();
 	
 	void setPulsing(boolean p);
@@ -88,25 +114,27 @@ class ledSkeleton {
     int _pulseSpeed;
     
     int _maxLightness;
-    int _lightnessStep;
+    //int _lightnessStep;
     
-	int _leftArmChannel;
-	int _rightArmChannel;
+	//int _leftArmChannel;
+	//int _rightArmChannel;
 	
-	int _leftLegChannel;
-	int _rightLegChannel;
+	//int _leftLegChannel;
+	//int _rightLegChannel;
 	
-	int _bodyChannel;
+	//int _spineChannel;
+	//int _ribChannel;
 	
-	int _leftArmSize;
-	int _rightArmSize;
+	//int _leftArmSize;
+	//int _rightArmSize;
 	
-	int _leftLegSize;
-	int _rightLegSize;
+	//int _leftLegSize;
+	//int _rightLegSize;
 	
-	int _backSize;
-	int _ribSize;
-    
+	//int _spineSize;
+	//int _ribSize;
+	
+	//int number_of_ribs;
     
     boolean _pulsing;
     boolean _pulsingDirection;
