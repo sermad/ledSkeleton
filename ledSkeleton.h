@@ -29,7 +29,7 @@ class ledSkeleton {
  	_bodypart rightArm;
  	
  	_bodypart spine;
- 	//_bodypart rib;
+ 	_bodypart rib;
   
     ledSkeleton(void);
     
