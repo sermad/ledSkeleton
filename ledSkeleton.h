@@ -20,6 +20,8 @@ class ledSkeleton {
  		unsigned int maxLightness = 10;
  		boolean pulsing = false;
  		boolean pulsingDirection = true;
+ 		long currentMillis;
+		long previousMillis;
  	} _bodypart;
  	
  	_bodypart leftLeg;
@@ -30,6 +32,8 @@ class ledSkeleton {
  	
  	_bodypart spine;
  	_bodypart rib;
+ 	
+ 	int totalSize;
   
     ledSkeleton(void);
     
@@ -42,10 +46,11 @@ class ledSkeleton {
 	void clearLEDColor();
 	
 	void setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange);
+	void setLEDPixel(unsigned int h, unsigned int s, unsigned int l, unsigned int pos);
 	
-	void pulseLEDCostume(unsigned int d);
+	void pulseLEDCostume(long d);
 	
-	void pulsePart(_bodypart* p, unsigned int d);
+	void pulsePart(_bodypart* p, long d);
 	
 	void pulseStart();
 	void pulseStop();
@@ -99,10 +104,10 @@ class ledSkeleton {
 	// color functions
 	int makeColor(unsigned int hue, unsigned int saturation, unsigned int lightness);
 	unsigned int h2rgb(unsigned int v1, unsigned int v2, unsigned int hue);
+	
+	OctoWS2811* ledInstance;
     
   private:
-    
-    OctoWS2811* ledInstance;
     
     int _ledsPerStrip;
     int _currentColor;
@@ -114,6 +119,10 @@ class ledSkeleton {
     int _pulseSpeed;
     
     int _maxLightness;
+    
+ 	long _currentMillis;
+	long _previousMillis;
+		
     //int _lightnessStep;
     
 	//int _leftArmChannel;
