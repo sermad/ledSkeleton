@@ -34,6 +34,8 @@ void ledSkeleton::initLEDs() {
 
 void ledSkeleton::setLEDColor(unsigned int h, unsigned int s, unsigned int l) {
 
+	/*
+
 	setHue(h);
 	setSaturation(s);
 	setLightness(l);
@@ -47,24 +49,32 @@ void ledSkeleton::setLEDColor(unsigned int h, unsigned int s, unsigned int l) {
   	}
   	
   	ledInstance->show();
+  	
+  	*/
+  	
+	// iterate over ALL of the pixels and set them blank
+  	for(int i=0;i<=totalSize;i++) {
+    
+  		setLEDPixel(h, s, l, i);
+
+  	}
+	
+	ledInstance->show();
 
 }
 
 void ledSkeleton::clearLEDColor() {
 
-	// iterate over ALL of the pixels and set them blank
-  	for (int i=0; i < ledInstance->numPixels(); i++) {
-    	ledInstance->setPixel(i, 0x000000);
-  	}
-  	
-  	ledInstance->show();
+	setLEDColor(0,0,0);
 
 }
 
-void ledSkeleton::setLEDPixel(unsigned int h, unsigned int s, unsigned int l, unsigned int pos) {
+unsigned int ledSkeleton::convertPosToPixel(unsigned int pos) {
 
-	int color = makeColor(h, s, l);
-	
+		//Serial.println("pos in - ");
+		//Serial.print(pos);
+		//Serial.println("");
+
 	if(pos >= 1 && pos <= leftLeg.size) {
 	
 		pos = pos - 1;
@@ -73,32 +83,77 @@ void ledSkeleton::setLEDPixel(unsigned int h, unsigned int s, unsigned int l, un
 	
 		pos = (pos - leftLeg.size) + _ledsPerStrip;
 		pos = pos - 1;
+		
+		//Serial.println("no 2");
 	
 	} else if(pos > leftLeg.size + rightLeg.size && pos <= leftLeg.size + rightLeg.size + spine.size + (6 * 4) ) {
 	
 		pos = (pos - leftLeg.size - rightLeg.size) + (_ledsPerStrip * 2);
 		pos = pos - 1;
+		
+		//Serial.println("no 3");
 	
 	} else if(pos > leftLeg.size + rightLeg.size + spine.size + (6 * 4) && pos <= leftLeg.size + rightLeg.size + spine.size + (6 * 4) + leftArm.size) {
 
-		pos = (pos - leftLeg.size - rightLeg.size - spine.size - (6 * 4) ) + (_ledsPerStrip * 3);
-		pos = pos - 1;
-	
+		// we are going to reverse the pixels for this arm
+		int pos_in = pos;
+		int offset = leftLeg.size + rightLeg.size + spine.size + (6 * 4);
+		
+		int diff = pos_in - offset;
+		pos = offset + rightArm.size - diff;
+		
+		// back to normal
+		
+		pos = pos - leftLeg.size - rightLeg.size - spine.size - (6 * 4) + (_ledsPerStrip * 3);
+		//pos = pos - 1;
+		
+		//Serial.println("pos - ");
+		//Serial.print(pos);
+		//Serial.println("");
+		
+		//pos = (pos - leftLeg.size - rightLeg.size - spine.size - (6 * 4) ) + (_ledsPerStrip * 3);
+		
+		//pos = 
+		
+		//pos = pos - 1;
+
+		
 	} else if(pos > leftLeg.size + rightLeg.size + spine.size + (6 * 4) + leftArm.size && pos <= leftLeg.size + rightLeg.size + spine.size + (6 * 4) + leftArm.size + rightArm.size) {
 
 		pos = (pos - leftLeg.size - rightLeg.size - spine.size - (6 * 4) - leftArm.size ) + (_ledsPerStrip * 4);
 		pos = pos - 1;
+		
+		//Serial.println("no 5");
 	
 	}
 	
-	ledInstance->setPixel(pos, color);
-	//ledInstance->show();
+	//Serial.println(pos);
+	
+	return pos;
+	
+}
+
+void ledSkeleton::setLEDPixel(unsigned int h, unsigned int s, unsigned int l, unsigned int pos) {
+
+	pixelArray[pos].h = h;
+	pixelArray[pos].s = s;
+	pixelArray[pos].l = l;
+	
+	unsigned int p = convertPosToPixel(pos);
+
+	setPixel(h, s, l, p);
 
 }
 
-void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange) {
+void ledSkeleton::setPixel(unsigned int h, unsigned int s, unsigned int l, unsigned int pos) {
 
 	int color = makeColor(h, s, l);
+		
+	ledInstance->setPixel(pos, color);
+  	
+}
+
+void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange) {
 	
 	if(channel == rightLeg.channel ) {
 	
@@ -109,7 +164,9 @@ void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l
 		int end = pos - ledsToChange;
 	
 		for (pos; pos >= end; pos--) {
-			ledInstance->setPixel(pos, color);
+
+			setPixel(h, s, l, pos);
+
 		}
   	
   	} else if(channel == spine.channel ) {
@@ -121,17 +178,17 @@ void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l
 		for (int pos = startpos; pos < end; pos++) {
 		
 			if(pos < startpos + spine.size) {
-			
-				ledInstance->setPixel(pos, color);
+
+				setPixel(h, s, l, pos);
 				
 			} else {
 				
-				ledInstance->setPixel(pos, color);
-				ledInstance->setPixel(pos + rib.size, color);
-				ledInstance->setPixel(pos + (rib.size * 2), color);
-				ledInstance->setPixel(pos + (rib.size * 3), color);
-				ledInstance->setPixel(pos + (rib.size * 4), color);
-				ledInstance->setPixel(pos + (rib.size * 5), color);
+				setPixel(h, s, l, pos);
+				setPixel(h, s, l, pos + rib.size);
+				setPixel(h, s, l, pos + (rib.size * 2));
+				setPixel(h, s, l, pos + (rib.size * 3));
+				setPixel(h, s, l, pos + (rib.size * 4));
+				setPixel(h, s, l, pos + (rib.size * 5));
 				
 			}
 		}
@@ -143,7 +200,7 @@ void ledSkeleton::setLEDPartColor(unsigned int h, unsigned int s, unsigned int l
 		int end = pos + ledsToChange;
 	
 		for (pos; pos < end; pos++) {
-				ledInstance->setPixel(pos, color);
+				setPixel(h, s, l, pos);
 		}
   	
   	}
@@ -167,6 +224,7 @@ void ledSkeleton::setLEDEq(unsigned int h, unsigned int s, unsigned int l, unsig
 }
 
 void ledSkeleton::initLeftArm(unsigned int channel, unsigned int size) {
+
 	leftArm.channel = channel;
 	leftArm.size = size;
 	
@@ -175,6 +233,7 @@ void ledSkeleton::initLeftArm(unsigned int channel, unsigned int size) {
 }
 
 void ledSkeleton::initRightArm(unsigned int channel, unsigned int size) {
+
 	rightArm.channel = channel;
 	rightArm.size = size;
 	
@@ -182,6 +241,7 @@ void ledSkeleton::initRightArm(unsigned int channel, unsigned int size) {
 }
 
 void ledSkeleton::initLeftLeg(unsigned int channel, unsigned int size) {
+
 	leftLeg.channel = channel;
 	leftLeg.size = size;
 	
@@ -189,6 +249,7 @@ void ledSkeleton::initLeftLeg(unsigned int channel, unsigned int size) {
 }
 
 void ledSkeleton::initRightLeg(unsigned int channel, unsigned int size) {
+
 	rightLeg.channel = channel;
 	rightLeg.size = size;
 	
@@ -196,6 +257,7 @@ void ledSkeleton::initRightLeg(unsigned int channel, unsigned int size) {
 }
 
 void ledSkeleton::initSpine(unsigned int channel, unsigned int size) {
+
 	spine.channel = channel;
 	spine.size = size;
 	
@@ -203,6 +265,7 @@ void ledSkeleton::initSpine(unsigned int channel, unsigned int size) {
 }
 
 void ledSkeleton::initRib(unsigned int channel, unsigned int size) {
+
 	rib.channel = channel;
 	rib.size = size;
 	
@@ -312,13 +375,84 @@ boolean ledSkeleton::getPulsingDirection() {
 }
 
 void ledSkeleton::pulseStart() {
-	_pulsing = true;
-	_pulsingDirection = true;
+
+  	for(int i=0;i<=totalSize;i++) {
+    
+  		pixelArray[i].pulsing = true;
+  		//pixelArray[i].pulsingDirection = true;
+
+  	}
+
 }
 
 void ledSkeleton::pulseStop() {
-	_pulsing = false;
-	_pulsingDirection = true;
+
+  	for(int i=0;i<totalSize;i++) {
+    
+  		//pixelArray[i].pulsing = false;
+  		//pixelArray[i].pulsingDirection = true;
+
+  	}
+
+}
+
+//
+// pulsePixel
+//
+void ledSkeleton::pulsePixel(unsigned int pos, long d) {
+
+pixelArray[pos].currentMillis = millis();
+
+if(pixelArray[pos].currentMillis - pixelArray[pos].previousMillis > d) {
+	
+pixelArray[pos].previousMillis = pixelArray[pos].currentMillis;
+
+if( pixelArray[pos].pulsing ) {
+
+	if(pixelArray[pos].pulsingDirection ) {
+		// rising
+	
+		if(pixelArray[pos].l < pixelArray[pos].maxLightness ) {
+		
+			pixelArray[pos].l += pixelArray[pos].pulsingSpeed;
+			    			
+    		// if we go over max lighness
+    		if(pixelArray[pos].l > pixelArray[pos].maxLightness) {
+    			pixelArray[pos].l = pixelArray[pos].maxLightness;
+    		}
+		
+		} else {
+			// reached peak
+			pixelArray[pos].pulsingDirection = false;
+		
+		}
+	
+	} else {
+	
+		// falling
+		if(pixelArray[pos].l > 0) {
+          	
+          	pixelArray[pos].l -= pixelArray[pos].pulsingSpeed;
+          	
+          	if(pixelArray[pos].l < 0) {
+          		pixelArray[pos].l = 0;
+          	}
+          	
+    	} else {
+            // pulsing finished
+      		pixelArray[pos].pulsingDirection = true;
+      		pixelArray[pos].pulsing = true;
+          
+        }
+	
+	}
+
+}
+
+}
+
+setLEDPixel(pixelArray[pos].h, pixelArray[pos].s, pixelArray[pos].l, pos);
+
 }
 
 //
@@ -338,7 +472,7 @@ if( p->pulsing ) {
 		// rising pulse
 		if(p->pulsingDirection ) {
 
-        	if(p->l  < p->maxLightness ) {
+        	if(p->l < p->maxLightness ) {
           
     			p->l += p->pulsingSpeed;
     			
@@ -365,7 +499,7 @@ if( p->pulsing ) {
           
           		// pulsing finished
           		p->pulsingDirection = true;
-          		p->pulsing = true;
+          		p->pulsing = false;
           
         	}
         
@@ -396,60 +530,6 @@ void ledSkeleton::pulseLEDCostume(long d) {
     pulsePart(&rightArm, d); // part, delay
 
 }
-
-/*void ledSkeleton::pulseLEDCostume(long d) {
-
-	_currentMillis = millis();
-
-	if(_currentMillis - _previousMillis > d) {
-	
-	_previousMillis = _currentMillis;
-
-	// check if we are pulsing
-    if( getPulsing() ) {
-      
-		// rising pulse
-		if(getPulsingDirection() ) {
-
-        	if(getLightness() < getMaxLightness() ) {
-          
-    			// increment lightness
-    			int l2 = getLightness();
-    			l2++;
-    			setLightness(l2);
-
-        	} else {
-          
-				// reached peak - reverse pulse direction
-				setPulsingDirection(false);
-          
-			}
-        
-		} else {
-        
-			// falling pulse
-        	if(getLightness() > 0) {
-          
-          		int l2 = getLightness();
-          		l2--;
-          		setLightness(l2);
-          
-        	} else {
-          
-          		// pulsing finished
-          		pulseStop();
-          
-        	}
-        
-      	}
-      
-    }
-    
-    }
-    
-    setLEDColor( getHue(), getSaturation(), getLightness() );
-
-}*/
 
 // The code taken from Paul Stoffregen
 // All credit to him

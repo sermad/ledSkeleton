@@ -10,6 +10,7 @@ class ledSkeleton {
   public:
   
   	typedef struct {
+  	
  		String name;
  		unsigned int channel;
  		unsigned int size;
@@ -22,7 +23,26 @@ class ledSkeleton {
  		boolean pulsingDirection = true;
  		long currentMillis;
 		long previousMillis;
+		
  	} _bodypart;
+ 	
+ 	typedef struct {
+ 	
+ 		unsigned int h = 0;
+ 		unsigned int s = 0;
+ 		unsigned int l = 0;
+ 		
+ 		unsigned int pulsingSpeed = 1;
+ 		boolean pulsing = true;
+ 		boolean pulsingDirection = true;
+ 		unsigned int maxLightness = 10;
+ 		long currentMillis;
+		long previousMillis;
+ 	
+ 	} _pixel;
+ 	
+ 	_pixel pixelArray[90];
+ 	_pixel randomPixelArray[90];
  	
  	_bodypart leftLeg;
  	_bodypart rightLeg;
@@ -45,12 +65,18 @@ class ledSkeleton {
 	
 	void clearLEDColor();
 	
+	void setPixel(unsigned int i, unsigned int h, unsigned int s, unsigned int l);
+	
 	void setLEDPartColor(unsigned int h, unsigned int s, unsigned int l, int channel, int ledsToChange);
 	void setLEDPixel(unsigned int h, unsigned int s, unsigned int l, unsigned int pos);
 	
 	void pulseLEDCostume(long d);
 	
 	void pulsePart(_bodypart* p, long d);
+	
+	void pulsePixel(unsigned int pos, long d);
+	
+	unsigned int convertPosToPixel(unsigned int pos);
 	
 	void pulseStart();
 	void pulseStop();
