@@ -3,7 +3,7 @@ ledSkeleton
 
 Code to control an LED Skeleton.
 
-Installation
+*Installation*
 
 Add the ledSkeleton library to your Arduino folder.
 
